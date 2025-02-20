@@ -39,7 +39,7 @@ def setup_logging():
 
 setup_logging()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY", "your-gemini-api-key"))
+genai.configure(api_key="AIzaSyD2ArK74wBtL1ufYmpyrV2LqaOBrSi3mlU")
 
 @dataclass
 class UserSession:
@@ -50,14 +50,22 @@ class UserSession:
     last_updated: datetime
 
 def get_gemini_model():
-    return genai.GenerativeModel("gemini-pro")
+    return genai.GenerativeModel(
+        "gemini-pro",
+        safety_settings=[
+            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
+            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_ONLY_HIGH"},
+            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_ONLY_HIGH"},
+        ]
+    )
 
 def determine_user_intent(model, user_input, conversation_history):
     system_prompt = """You are a banking assistant specializing in funds management.
     Your goal is to determine whether the user wants to transfer funds or deposit funds.
     
-    - If the user mentions sending money, transferring money, paying someone, or moving funds, classify as FUNDS_TRANSFER.
-    - If the user mentions depositing money, adding funds, saving money, or fixed deposits, classify as FUNDS_DEPOSIT.
+    - If the user mentions sending money, transferring money, IMPS, NEFT, RTGS, paying someone, or moving funds, classify as FUNDS_TRANSFER.
+    - If the user mentions depositing money, adding funds, saving money, fixed deposits, FD, recusrring deposits, RD or any other classify as FUNDS_DEPOSIT.
     
     Return a JSON object:
     {
@@ -75,7 +83,7 @@ def determine_user_intent(model, user_input, conversation_history):
     except json.JSONDecodeError:
         return {"intent": "UNKNOWN"}
 
-@app.route('/api/conversation/start', methods=['POST'])
+@app.route('/api/start', methods=['POST'])
 def start_conversation():
     try:
         session_id = str(uuid.uuid4())
@@ -110,7 +118,7 @@ def start_conversation():
         app.logger.error(f"Error starting conversation: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
-@app.route('/api/conversation/process', methods=['POST'])
+@app.route('/api/process', methods=['POST'])
 def process_conversation():
     try:
         data = request.get_json()
