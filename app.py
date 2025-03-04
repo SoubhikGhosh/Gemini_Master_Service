@@ -51,7 +51,7 @@ class UserSession:
 
 def get_gemini_model():
     return genai.GenerativeModel(
-        "gemini-1.5-pro",
+        "gemini-1.5-flash",
         safety_settings=[
             {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
             {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
