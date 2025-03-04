@@ -39,7 +39,7 @@ def setup_logging():
 
 setup_logging()
 
-genai.configure(api_key="AIzaSyD2ArK74wBtL1ufYmpyrV2LqaOBrSi3mlU")
+genai.configure(api_key="AIzaSyCD6DGeERwWQbBC6BK1Hq0ecagQj72rqyQ")
 
 @dataclass
 class UserSession:
