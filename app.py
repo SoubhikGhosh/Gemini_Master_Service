@@ -79,7 +79,7 @@ def determine_user_intent(model, user_input, conversation_history):
     response = model.generate_content(full_prompt).text.strip()
     
     try:
-        app.logger.info(f"response: {response.text}")
+        app.logger.info(f"response: {response}")
         return json.loads(response)
     except json.JSONDecodeError:
         return {"intent": "UNKNOWN"}
