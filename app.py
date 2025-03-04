@@ -80,8 +80,17 @@ def determine_user_intent(model, user_input, conversation_history):
     
     try:
         app.logger.info(f"response: {response}")
-        return json.loads(response)
+        # Remove any extra text before/after the JSON object
+        if '{' in response and '}' in response:
+            json_start = response.find('{')
+            json_end = response.rfind('}') + 1
+            json_str = response[json_start:json_end]
+            return json.loads(json_str)
+        else:
+            # Fallback if no JSON is found
+            return {"intent": "UNKNOWN"}
     except json.JSONDecodeError:
+        app.logger.error(f"Failed to parse JSON response: {response}")
         return {"intent": "UNKNOWN"}
 
 @app.route('/api/start', methods=['POST'])
